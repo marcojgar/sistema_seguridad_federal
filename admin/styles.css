@@ -1,0 +1,22 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.bateria-baja {
+    background-color: #f8d7da !important;
+}
+
+.estado-activo {
+    color: green;
+    font-weight: bold;
+}
+
+.estado-inactivo {
+    color: red;
+    font-weight: bold;
+}
+
+.estado-mantenimiento {
+    color: orange;
+    font-weight: bold;
+}
