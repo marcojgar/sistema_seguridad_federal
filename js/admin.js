@@ -19,6 +19,68 @@ const estado = document.getElementById("estado");
 
 let statusChart;
 
+function mostrarNotificacion(mensaje, tipo = "danger") {
+
+    const container = document.getElementById("notificationContainer");
+
+    const notif = document.createElement("div");
+    notif.className = `alert alert-${tipo} shadow`;
+    notif.style.minWidth = "300px";
+    notif.style.transition = "opacity 0.5s ease";
+
+    notif.innerHTML = `
+        <strong>🚨 Alerta:</strong> ${mensaje}
+    `;
+
+    container.appendChild(notif);
+
+    // Sonido
+    const audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
+    audio.play();
+
+    // Desaparece en 5 segundos
+    setTimeout(() => {
+        notif.style.opacity = "0";
+        setTimeout(() => notif.remove(), 500);
+    }, 5000);
+}
+
+
+// ================= ALERTA =================
+function calcularAlerta(bateriaValor) {
+    return bateriaValor < 20;
+}
+
+async function registrarEventoEspecial(mensaje) {
+
+    const res = await fetch(API_URL);
+    const devices = await res.json();
+
+    const fechaActual = new Date().toISOString();
+
+    for (let device of devices) {
+
+        const nuevoLog = {
+            evento: mensaje,
+            fecha: fechaActual
+        };
+
+        const updatedLogs = device.logs ? [...device.logs, nuevoLog] : [nuevoLog];
+
+        await fetch(`${API_URL}/${device.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                ...device,
+                logs: updatedLogs
+            })
+        });
+    }
+
+    console.log("📜 Evento especial registrado");
+}
+
+
 // ================= GRÁFICO =================
 function initChart() {
     const ctx = document.getElementById('statusChart').getContext('2d');
@@ -31,13 +93,6 @@ function initChart() {
                 backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
                 borderWidth: 0
             }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                title: { display: true, text: 'Distribución de Estados' }
-            }
         }
     });
 }
@@ -59,7 +114,7 @@ async function loadDevices() {
     const res = await fetch(API_URL);
     const devices = await res.json();
 
-    const alertasCount = devices.filter(d => d.alerta).length;
+    const alertasCount = devices.filter(d => calcularAlerta(d.bateria)).length;
     const alertasSection = document.getElementById("alertasSection");
     const alertasSpan = document.getElementById("alertasCount");
 
@@ -71,6 +126,9 @@ async function loadDevices() {
     }
 
     table.innerHTML = devices.map(device => {
+
+        const alerta = calcularAlerta(device.bateria);
+
         let badgeClass =
             device.estado === 'Activo'
                 ? 'bg-success'
@@ -79,7 +137,7 @@ async function loadDevices() {
                     : 'bg-danger';
 
         return `
-        <tr>
+        <tr class="${alerta ? 'table-danger' : ''}">
             <td>${device.nombre}</td>
             <td>${device.tipo}</td>
             <td>${device.modelo || ''}</td>
@@ -87,11 +145,17 @@ async function loadDevices() {
             <td>${device.ubicacion}</td>
             <td><span class="badge ${badgeClass}">${device.estado}</span></td>
             <td>${device.bateria || 0}%</td>
-            <td>${device.alerta ? '🔴' : '🟢'}</td>
+            <td>${alerta ? '🔴' : '🟢'}</td>
             <td>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-warning btn-sm" onclick="editDevice('${device.id}')">Editar</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteDevice('${device.id}')">Eliminar</button>
+                    <button class="btn btn-warning btn-sm"
+                        onclick="editDevice('${device.id}')">
+                        Editar
+                    </button>
+                    <button class="btn btn-danger btn-sm"
+                        onclick="deleteDevice('${device.id}')">
+                        Eliminar
+                    </button>
                 </div>
             </td>
         </tr>
@@ -124,30 +188,12 @@ async function loadControlPanel() {
     `).join('');
 }
 
-// ================= LOGS PERSISTENTES =================
-async function appendLogToDevice(device) {
-    const newLog = {
-        estado: device.estado,
-        bateria: device.bateria,
-    };
-
-    const updatedLogs = device.logs ? [...device.logs, newLog] : [newLog];
-
-    if (updatedLogs.length > 10) updatedLogs.shift();
-
-    await fetch(`${API_URL}/${device.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...device, logs: updatedLogs })
-    });
-}
-
 // ================= SWITCH =================
 async function handleSwitchClick(event, id) {
+
     const isChecked = event.target.checked;
     const nuevoEstado = isChecked ? "Activo" : "Inactivo";
 
-    // 🔹 Obtener dispositivo actual
     const res = await fetch(`${API_URL}/${id}`);
     const device = await res.json();
 
@@ -157,20 +203,20 @@ async function handleSwitchClick(event, id) {
         return;
     }
 
-    // 🔹 Crear nuevo log
-    const newLog = {
+    // 🔹 Crear log normal SIEMPRE
+    const nuevoLog = {
         estado: nuevoEstado,
         bateria: device.bateria,
         fecha: new Date().toISOString()
     };
 
-    const updatedLogs = device.logs ? [...device.logs, newLog] : [newLog];
+    const updatedLogs = device.logs ? [...device.logs, nuevoLog] : [nuevoLog];
     if (updatedLogs.length > 10) updatedLogs.shift();
 
-    // 🔹 UN SOLO PUT
     const updatedDevice = {
         ...device,
         estado: nuevoEstado,
+        alerta: calcularAlerta(device.bateria),
         ultimaConexion: Date.now(),
         logs: updatedLogs
     };
@@ -181,12 +227,74 @@ async function handleSwitchClick(event, id) {
         body: JSON.stringify(updatedDevice)
     });
 
-    // 🔥 Actualizar interfaz SIN volver a pedir todo
+    // 🚨 SI ES SENSOR Y SE ACTIVA
+    if (device.nombre.includes("Sensor de Puerta") && nuevoEstado === "Activo") {
+
+        mostrarNotificacion("🚨 Intrusión detectada en Puerta Trasera");
+
+        const resAll = await fetch(API_URL);
+        const devices = await resAll.json();
+
+        // 🔊 Activar Sirena
+        const sirena = devices.find(d => d.nombre.includes("Sirena"));
+        if (sirena) {
+
+            const logSirena = {
+                estado: "Activo",
+                bateria: sirena.bateria,
+                fecha: new Date().toISOString()
+            };
+
+            const sirenaActualizada = {
+                ...sirena,
+                estado: "Activo",
+                alerta: true,
+                ultimaConexion: Date.now(),
+                logs: sirena.logs ? [...sirena.logs, logSirena] : [logSirena]
+            };
+
+            await fetch(`${API_URL}/${sirena.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(sirenaActualizada)
+            });
+        }
+
+        // 🔒 Bloquear Cerradura
+        const cerradura = devices.find(d => d.nombre.includes("Cerradura"));
+        if (cerradura) {
+
+            const logCerradura = {
+                estado: "Activo",
+                bateria: cerradura.bateria,
+                fecha: new Date().toISOString()
+            };
+
+            const cerraduraActualizada = {
+                ...cerradura,
+                estado: "Activo",
+                ultimaConexion: Date.now(),
+                logs: cerradura.logs ? [...cerradura.logs, logCerradura] : [logCerradura]
+            };
+
+            await fetch(`${API_URL}/${cerradura.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(cerraduraActualizada)
+            });
+        }
+
+        // 📜 Registrar Evento Especial (opcional)
+        await registrarEventoEspecial("🚨 Evento Especial: Intrusión Detectada");
+    }
+
     loadDevices();
     loadControlPanel();
     updateStatusChart();
     renderMonitoring();
 }
+
+
 
 // ================= MONITOREO =================
 async function renderMonitoring() {
@@ -211,31 +319,38 @@ async function renderMonitoring() {
     const statusCards = document.getElementById("statusCards");
     const logTable = document.getElementById("logTable");
 
-    statusCards.innerHTML = latestLogs.slice(0, 3).map(log => `
-        <div class="col-md-4">
-            <div class="card text-white ${log.estado === "Activo" ? "bg-success" : "bg-danger"} mb-3">
-                <div class="card-body">
-                    <h6>${log.nombre}</h6>
-                    <p>Estado: ${log.estado}</p>
-                    <p>Batería: ${log.bateria}%</p>
-                </div>
-            </div>
-        </div>
-    `).join('');
+    statusCards.innerHTML = "";
 
-    logTable.innerHTML = latestLogs.map(log => `
-        <tr>
-            <td>${log.nombre}</td>
-            <td>${log.estado}</td>
-            <td>${log.bateria}%</td>
-            <td>${new Date(log.fecha).toLocaleString()}</td>
-        </tr>
-    `).join('');
+    logTable.innerHTML = latestLogs.map(log => {
+
+        // 🔴 Si es evento especial
+        if (log.evento) {
+            return `
+                <tr class="table-danger">
+                    <td>${log.nombre}</td>
+                    <td colspan="2"><strong>${log.evento}</strong></td>
+                    <td>${new Date(log.fecha).toLocaleString()}</td>
+                </tr>
+            `;
+        }
+
+        // 🔹 Log normal
+        return `
+            <tr>
+                <td>${log.nombre}</td>
+                <td>${log.estado}</td>
+                <td>${log.bateria}%</td>
+                <td>${new Date(log.fecha).toLocaleString()}</td>
+            </tr>
+        `;
+    }).join('');
 }
 
 // ================= CRUD =================
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    const bateriaValor = Number(bateria.value);
 
     const baseData = {
         nombre: nombre.value,
@@ -243,25 +358,36 @@ form.addEventListener("submit", async (e) => {
         modelo: modeloInput.value,
         numeroSerie: numeroSerieInput.value,
         ubicacion: ubicacion.value,
-        bateria: Number(bateria.value),
+        bateria: bateriaValor,
         consumoEnergia: Number(consumoEnergia.value),
-        estado: estado.value
+        estado: estado.value,
+        alerta: calcularAlerta(bateriaValor)
     };
 
     if (deviceId.value) {
+
+        const res = await fetch(`${API_URL}/${deviceId.value}`);
+        const currentDevice = await res.json();
+
+        const updatedDevice = {
+            ...currentDevice,
+            ...baseData
+        };
+
         await fetch(`${API_URL}/${deviceId.value}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...baseData })
+            body: JSON.stringify(updatedDevice)
         });
+
     } else {
+
         await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 ...baseData,
                 ultimaConexion: Date.now(),
-                alerta: false,
                 logs: []
             })
         });
@@ -271,8 +397,10 @@ form.addEventListener("submit", async (e) => {
     loadDevices();
     loadControlPanel();
     updateStatusChart();
+    renderMonitoring();
 });
 
+// ================= EDIT =================
 async function editDevice(id) {
     const res = await fetch(`${API_URL}/${id}`);
     const device = await res.json();
@@ -291,6 +419,7 @@ async function editDevice(id) {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+// ================= DELETE =================
 async function deleteDevice(id) {
     if (!confirm("¿Eliminar dispositivo?")) return;
     await fetch(`${API_URL}/${id}`, { method: "DELETE" });
@@ -300,6 +429,7 @@ async function deleteDevice(id) {
     renderMonitoring();
 }
 
+// ================= LIMPIAR =================
 function clearForm() {
     form.reset();
     deviceId.value = "";
@@ -317,6 +447,7 @@ setInterval(() => {
 
 setInterval(loadControlPanel, 10000);
 
+// ================= START =================
 window.addEventListener('load', () => {
     initChart();
     loadDevices();
