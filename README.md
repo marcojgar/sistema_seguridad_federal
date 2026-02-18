@@ -1,116 +1,166 @@
-# 🌐 IoT Device Management System
-## Implementación de Soluciones IoT
-
-![Status](https://img.shields.io/badge/status-completed-success)
-![Frontend](https://img.shields.io/badge/frontend-HTML%2C%20JS%2C%20Bootstrap%205-blue)
-![API](https://img.shields.io/badge/API-MockAPI-orange)
-![Architecture](https://img.shields.io/badge/architecture-REST-lightgrey)
-![License](https://img.shields.io/badge/license-Academic-informational)
+# 🛡️ S.I.A.I.P.
+## Sistema Inteligente de Alerta y Intervención Policial
 
 ---
 
 ## 📌 Descripción General
 
-Este proyecto implementa un sistema web completo para la **administración, control y monitoreo en tiempo real de dispositivos IoT**, utilizando una arquitectura REST con persistencia en MockAPI mediante una sola colección.
+El **Sistema Inteligente de Alerta e Intervención Policial (S.I.A.I.P.)** es una plataforma web basada en tecnologías IoT orientada al monitoreo, control y simulación de dispositivos de seguridad en tiempo real.
 
-La solución permite:
+El sistema integra sensores, actuadores y mecanismos automatizados de respuesta ante eventos críticos, simulando el funcionamiento de un centro de comando y control policial.
 
-- CRUD completo de dispositivos IoT
-- Control de dispositivos mediante interruptores
-- Registro persistente de eventos (logs)
-- Monitoreo gráfico en tiempo real
-- Tabla con los últimos 10 estados
-- Refresco automático cada 2 segundos
-- Diseño responsivo con Bootstrap 5
+Inspirado en el enfoque estratégico de la seguridad pública federal en México, S.I.A.I.P. permite detectar intrusiones, generar alertas automáticas, activar dispositivos de respuesta y registrar eventos críticos dentro de un dashboard dinámico.
 
 ---
 
-# 🎯 Objetivo Académico
+## 🎯 Objetivo General
 
-Desarrollar una solución IoT funcional que cumpla con los siguientes requisitos:
-
-- ✔ Mínimo 3 dispositivos IoT  
-- ✔ Base de datos en MockAPI  
-- ✔ Uso de una sola colección  
-- ✔ CRUD completo  
-- ✔ Control por interruptores  
-- ✔ Sección gráfica de monitoreo  
-- ✔ Tabla con últimos 10 estados  
-- ✔ Refresco automático (2 segundos)  
-- ✔ Uso de Bootstrap 5  
-- ✔ Implementación de reglas lógicas reales  
-- ✔ Proyecto original  
+Desarrollar un sistema inteligente basado en tecnologías IoT que permita la supervisión, gestión y simulación de dispositivos de seguridad, integrando mecanismos automatizados de alerta y respuesta ante eventos críticos.
 
 ---
 
-# 🏗 Arquitectura del Sistema
+## 🎯 Objetivos Específicos
 
-El sistema sigue una arquitectura cliente-servidor basada en REST
-
+- Implementar una aplicación web para el monitoreo en tiempo real de dispositivos IoT.
+- Simular eventos de intrusión mediante sensores inteligentes.
+- Automatizar la activación de dispositivos de respuesta (sirena y cerradura).
+- Registrar eventos críticos en un historial dinámico.
+- Generar alertas basadas en condiciones como nivel de batería.
+- Visualizar estadísticas operativas mediante gráficos.
+- Integrar lógica de reacción automática ante eventos de seguridad.
 
 ---
 
-# 🧩 Componentes del Sistema
+## 🧠 Arquitectura del Sistema
 
-## 1️⃣ Administración (CRUD)
+El sistema sigue el modelo operativo:
 
-Permite:
+Detección → Notificación → Intervención → Registro
 
-- Crear dispositivos
-- Editar dispositivos
+### Componentes principales:
+
+- **Frontend:** HTML, CSS (Bootstrap), JavaScript
+- **Backend simulado:** MockAPI
+- **Gráficos:** Chart.js
+- **Base de datos:** MockAPI REST
+- **Lógica IoT:** Simulación en JavaScript
+
+---
+
+## 🛠️ Funcionalidades
+
+### 🔹 Administración de Dispositivos
+- Crear dispositivos IoT
+- Editar información
 - Eliminar dispositivos
-- Listar dispositivos
-- Validar campos obligatorios
+- Gestión de estados (Activo, Inactivo, Mantenimiento)
+
+### 🔹 Monitoreo en Tiempo Real
+- Visualización dinámica de dispositivos
+- Indicador de batería
+- Estado operativo
+- Alertas activas
+
+### 🔹 Simulación de Intrusión
+
+Cuando el sensor de puerta se activa:
+
+- 🚨 Se genera notificación visual
+- 🔊 Se activa la sirena automáticamente
+- 🔒 Se bloquea la cerradura inteligente
+- 📜 Se registra un evento especial
+- 📊 Se actualiza el dashboard
+
+### 🔹 Sistema de Alertas
+
+Regla implementada:
+
+Si batería < 20% → Alerta activa
+
+Las alertas afectan:
+- Color de fila en tabla
+- Indicador visual
+- Conteo dinámico de dispositivos en estado crítico
+
+### 🔹 Historial de Eventos
+
+- Últimos 10 cambios registrados
+- Eventos normales (cambio de estado)
+- Eventos especiales (intrusión detectada)
 
 ---
 
-## 2️⃣ Control de Dispositivos
-
-Permite:
-
-- Encender y apagar dispositivos mediante interruptores (switch)
-- Visualizar el estado actual
-- Generar automáticamente un log en cada cambio
-- Actualizar el dispositivo en la base de datos
-
----
-
-## 3️⃣ Monitoreo en Tiempo Real
+## 📊 Dashboard
 
 Incluye:
 
-- Indicadores gráficos dinámicos
-- Tabla con los últimos 10 eventos por dispositivo
-- Refresco automático cada 2 segundos
-- Actualización sin recargar la página
+- Gráfico tipo Doughnut con distribución de estados
+- Indicador de alertas activas
+- Tarjetas dinámicas de monitoreo
+- Registro cronológico de eventos
 
 ---
 
-# 🗄 Base de Datos (Una Sola Colección)
+## 🔐 Dispositivos Simulados
 
-Se utiliza una única colección en MockAPI.
-
-Cada documento representa un dispositivo y contiene su propio historial de eventos.
+- Sensor de Puerta Magnético
+- Sirena de Alarma
+- Cerradura Inteligente
 
 ---
 
-## 📦 Modelo de Datos
+## 🚨 Lógica de Seguridad Implementada
 
-```json
-{
-  "id": "1",
-  "nombre": "Sensor de Temperatura",
-  "tipo": "Sensor",
-  "ubicacion": "Laboratorio",
-  "estado": true,
-  "logs": [
-    {
-      "fecha": "2026-02-15T18:22:10.000Z",
-      "estado": true
-    },
-    {
-      "fecha": "2026-02-15T18:20:05.000Z",
-      "estado": false
-    }
-  ]
-}
+Cuando ocurre una intrusión:
+
+1. Se activa el sensor.
+2. Se genera una notificación automática.
+3. Se activa la sirena.
+4. Se bloquea la cerradura.
+5. Se registra un evento especial.
+6. Se actualiza el sistema completo.
+
+---
+
+## 📁 Estructura del Proyecto
+
+/assets  
+    /images  
+/js  
+    admin.js  
+index.html  
+README.md  
+
+---
+
+## 🚀 Instalación y Uso
+
+1. Clonar o descargar el proyecto.
+2. Configurar la URL de MockAPI en `admin.js`.
+3. Abrir `index.html` en el navegador.
+4. Simular eventos activando dispositivos.
+
+---
+
+## 🔮 Posibles Mejoras Futuras
+
+- Sistema de autenticación de usuarios.
+- Notificaciones push del navegador.
+- Simulación automática periódica.
+- Historial exclusivo de eventos críticos.
+- Integración con WebSockets.
+- Simulación de caída de red.
+- Control por zonas geográficas.
+- Panel de estadísticas avanzadas.
+
+---
+
+## 🏛️ Enfoque Institucional
+
+El sistema toma como referencia conceptual los centros de comando y control utilizados en seguridad pública, reforzado visualmente mediante la identidad gráfica basada en el escudo de la Policía Federal Mexicana.
+
+---
+
+## 📌 Conclusión
+
+S.I.A.I.P. demuestra la aplicabilidad de soluciones IoT en el ámbito de la seguridad pública, integrando monitoreo en tiempo real, automatización de respuestas y registro inteligente de eventos, ofreciendo una simulación funcional de un sistema moderno de intervención policial.
