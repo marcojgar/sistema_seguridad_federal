@@ -11,14 +11,9 @@ const deviceId = document.getElementById("deviceId");
 const nombre = document.getElementById("nombre");
 const tipo = document.getElementById("tipo");
 const ubicacion = document.getElementById("ubicacion");
-const ipInput = document.getElementById("ip");
-const macInput = document.getElementById("mac");
 const modeloInput = document.getElementById("modelo");
 const numeroSerieInput = document.getElementById("numeroSerie");
-const firmwareInput = document.getElementById("firmware");
-const fechaInstalacionInput = document.getElementById("fechaInstalacion");
 const bateria = document.getElementById("bateria");
-const senal = document.getElementById("senal");
 const consumoEnergia = document.getElementById("consumoEnergia");
 const estado = document.getElementById("estado");
 
@@ -90,11 +85,8 @@ async function loadDevices() {
             <td>${device.modelo || ''}</td>
             <td>${device.numeroSerie || ''}</td>
             <td>${device.ubicacion}</td>
-            <td>${device.ip || ''}</td>
-            <td>${device.mac || ''}</td>
             <td><span class="badge ${badgeClass}">${device.estado}</span></td>
             <td>${device.bateria || 0}%</td>
-            <td>${device.senal || 0}%</td>
             <td>${device.alerta ? '🔴' : '🟢'}</td>
             <td>
                 <div class="d-flex gap-2">
@@ -137,8 +129,6 @@ async function appendLogToDevice(device) {
     const newLog = {
         estado: device.estado,
         bateria: device.bateria,
-        senal: device.senal,
-        fecha: new Date().toISOString()
     };
 
     const updatedLogs = device.logs ? [...device.logs, newLog] : [newLog];
@@ -224,7 +214,6 @@ async function renderMonitoring() {
             <td>${log.nombre}</td>
             <td>${log.estado}</td>
             <td>${log.bateria}%</td>
-            <td>${log.senal}%</td>
             <td>${new Date(log.fecha).toLocaleString()}</td>
         </tr>
     `).join('');
@@ -240,13 +229,8 @@ form.addEventListener("submit", async (e) => {
         modelo: modeloInput.value,
         numeroSerie: numeroSerieInput.value,
         ubicacion: ubicacion.value,
-        ip: ipInput.value,
-        mac: macInput.value,
         bateria: Number(bateria.value),
-        senal: Number(senal.value),
         consumoEnergia: Number(consumoEnergia.value),
-        firmware: firmwareInput.value,
-        fechaInstalacion: fechaInstalacionInput.value,
         estado: estado.value
     };
 
@@ -283,14 +267,9 @@ async function editDevice(id) {
     nombre.value = device.nombre;
     tipo.value = device.tipo;
     ubicacion.value = device.ubicacion;
-    ipInput.value = device.ip || '';
-    macInput.value = device.mac || '';
     modeloInput.value = device.modelo || '';
     numeroSerieInput.value = device.numeroSerie || '';
-    firmwareInput.value = device.firmware || '';
-    fechaInstalacionInput.value = device.fechaInstalacion || '';
     bateria.value = device.bateria;
-    senal.value = device.senal;
     consumoEnergia.value = device.consumoEnergia;
     estado.value = device.estado;
 
