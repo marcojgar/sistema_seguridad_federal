@@ -4,10 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="assets/images/favicon.png">
-    <title>S.I.A.C.E. - Sistema Inteligente Autónomo de Control y Emergencias</title>
+    <title>Sistema Inteligente de Alerta e Intervención Policial</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body class="bg-light">
@@ -16,7 +18,7 @@
 
         <h1 class="text-center mb-4 d-flex justify-content-center align-items-center gap-2 flex-wrap">
             <img src="assets/images/logo-policia.png" alt="SCCP Logo" class="img-fluid" style="max-height:250px;">
-            <span>S.I.A.C.E. - Sistema Inteligente Autónomo de Control y Emergencias</span>
+            <span>S.I.A.I.P. - Sistema Inteligente de Alerta e Intervención Policial</span>
         </h1>
 
         <!-- ================= ADMINISTRACIÓN ================= -->
@@ -158,6 +160,24 @@
     <!-- Contenedor de notificaciones -->
     <div id="notificationContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
     </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-dark text-white text-center py-3 mt-4">
+        <div class="container d-flex flex-column flex-md-row justify-content-center align-items-center gap-3">
+
+            <div>
+                © <span id="year"></span> Desarrollado por <strong>Marco Julian Garcia Fernandez</strong>
+            </div>
+
+            <div>
+                <a href="https://www.linkedin.com/in/marco-julian-garcia-fernandez-9941b53a9/" target="_blank" class="text-white fs-4"
+                    style="text-decoration: none;">
+                    <i class="bi bi-linkedin"></i>
+                </a>
+            </div>
+
+        </div>
+    </footer>
 
 
     <script src="js/admin.js"></script>

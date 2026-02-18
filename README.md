@@ -1,5 +1,5 @@
 # 🛡️ S.I.A.I.P.
-## Sistema Inteligente de Alerta y Intervención Policial
+## Sistema Inteligente de Alerta e Intervención Policial
 
 ---
 
