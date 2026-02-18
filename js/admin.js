@@ -147,6 +147,7 @@ async function handleSwitchClick(event, id) {
     const isChecked = event.target.checked;
     const nuevoEstado = isChecked ? "Activo" : "Inactivo";
 
+    // 🔹 Obtener dispositivo actual
     const res = await fetch(`${API_URL}/${id}`);
     const device = await res.json();
 
@@ -156,10 +157,22 @@ async function handleSwitchClick(event, id) {
         return;
     }
 
+    // 🔹 Crear nuevo log
+    const newLog = {
+        estado: nuevoEstado,
+        bateria: device.bateria,
+        fecha: new Date().toISOString()
+    };
+
+    const updatedLogs = device.logs ? [...device.logs, newLog] : [newLog];
+    if (updatedLogs.length > 10) updatedLogs.shift();
+
+    // 🔹 UN SOLO PUT
     const updatedDevice = {
         ...device,
         estado: nuevoEstado,
-        ultimaConexion: Date.now()
+        ultimaConexion: Date.now(),
+        logs: updatedLogs
     };
 
     await fetch(`${API_URL}/${id}`, {
@@ -168,10 +181,11 @@ async function handleSwitchClick(event, id) {
         body: JSON.stringify(updatedDevice)
     });
 
-    await appendLogToDevice(updatedDevice);
-    await renderMonitoring();
-    updateStatusChart();
+    // 🔥 Actualizar interfaz SIN volver a pedir todo
     loadDevices();
+    loadControlPanel();
+    updateStatusChart();
+    renderMonitoring();
 }
 
 // ================= MONITOREO =================
@@ -299,7 +313,7 @@ setInterval(() => {
     loadDevices();
     updateStatusChart();
     renderMonitoring();
-}, 2000);
+}, 8000);
 
 setInterval(loadControlPanel, 10000);
 
