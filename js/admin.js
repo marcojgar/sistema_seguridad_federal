@@ -605,6 +605,16 @@ form.addEventListener("submit", async (e) => {
 
     const bateriaValor = Number(bateria.value);
 
+    // VALIDAR BATERIA
+
+    if (bateriaValor < 0 || bateriaValor > 100) {
+
+        alert("La batería debe estar entre 0 y 100%");
+
+        return;
+
+    }
+
     const baseData = {
         nombre: nombre.value,
         tipo: tipo.value,
