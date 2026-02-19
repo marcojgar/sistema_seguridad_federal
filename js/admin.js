@@ -130,31 +130,19 @@ function bloquearSistema() {
 
 function desbloquearSistema() {
 
-    const pass =
-        document.getElementById("passwordInput").value;
-
     const input =
         document.getElementById("passwordInput");
 
-
-    // SIN INTENTOS
-
-    if (intentosRestantes <= 0) {
-
-        alert("Sistema bloqueado permanentemente");
-
-        return;
-
-    }
+    const pass = input.value;
 
 
-    // CONTRASEÑA CORRECTA
+    // ⭐ CODIGO MAESTRO SIEMPRE FUNCIONA
 
-    if (pass === PASSWORD_SEGURIDAD) {
-
-        pass === "911911" // ⭐ codigo maestro
+    if (pass === "911911") {
 
         sistemaBloqueado = false;
+
+        intentosRestantes = 3;
 
         localStorage.removeItem(
             "sistemaBloqueado"
@@ -169,7 +157,36 @@ function desbloquearSistema() {
 
         input.value = "";
 
-        intentosRestantes = 3; // reinicia
+        mostrarNotificacion(
+            "✅ Desbloqueo administrador",
+            "success"
+        );
+
+        return;
+
+    }
+
+
+    // ⭐ CONTRASEÑA NORMAL
+
+    if (pass === PASSWORD_SEGURIDAD) {
+
+        sistemaBloqueado = false;
+
+        intentosRestantes = 3;
+
+        localStorage.removeItem(
+            "sistemaBloqueado"
+        );
+
+        localStorage.removeItem(
+            "intentosRestantes"
+        );
+
+        document.getElementById("lockScreen")
+            .style.display = "none";
+
+        input.value = "";
 
         mostrarNotificacion(
             "✅ Sistema desbloqueado",
@@ -181,7 +198,20 @@ function desbloquearSistema() {
     }
 
 
-    // CONTRASEÑA INCORRECTA
+    // ⭐ SI YA NO HAY INTENTOS
+
+    if (intentosRestantes <= 0) {
+
+        alert(
+            "🚨 Acceso bloqueado. Use código administrador."
+        );
+
+        return;
+
+    }
+
+
+    // ⭐ FALLÓ
 
     intentosRestantes--;
 
@@ -192,26 +222,10 @@ function desbloquearSistema() {
 
     input.value = "";
 
-
-    if (intentosRestantes > 0) {
-
-        alert(
-            "Contraseña incorrecta. Intentos restantes: "
-            + intentosRestantes
-        );
-
-    } else {
-
-        alert(
-            "🚨 Acceso bloqueado. Contacte administrador."
-        );
-
-        mostrarNotificacion(
-            "🚨 3 intentos fallidos",
-            "danger"
-        );
-
-    }
+    alert(
+        "Contraseña incorrecta. Intentos restantes: "
+        + intentosRestantes
+    );
 
 }
 
