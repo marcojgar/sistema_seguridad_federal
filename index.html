@@ -113,14 +113,85 @@
             </div>
         </div>
 
-        <!-- ================= CONTROL ================= -->
-        <div class="card shadow mb-4">
+        <!-- ================= PANEL CCTV + CONTROL ================= -->
+
+        <div class="card shadow mb-5">
+
             <div class="card-header bg-success text-white">
-                Control en Tiempo Real
+
+                Centro de Control y Vigilancia
+
             </div>
+
             <div class="card-body">
-                <div id="controlSection" class="row"></div>
+
+                <div class="row g-4 align-items-stretch">
+
+                    <!-- CAMARA -->
+                    <div class="col-lg-5">
+
+                        <div class="camera-card h-100">
+
+                            <div class="camera-header">
+
+                                <span>Seguridad - Puerta trasera</span>
+
+                                <div class="camera-live">
+
+                                    <span class="live-dot"></span>
+                                    LIVE
+
+                                </div>
+
+                            </div>
+
+                            <div class="camera-body">
+
+                                <video id="liveCamera" autoplay muted playsinline>
+                                </video>
+
+                                <div class="camera-overlay">
+
+                                    <div id="cameraTime"></div>
+
+                                    <div id="cameraStatus">
+
+                                        Cámara Inactiva
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONTROL -->
+                    <div class="col-lg-7">
+
+                        <div class="h-100">
+
+                            <h5 class="mb-3 text-success">
+
+                                Control en Tiempo Real
+
+                            </h5>
+
+                            <div id="controlSection" class="row">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
 
         <!-- ================= MONITOREO ================= -->
@@ -168,7 +239,56 @@
     </div>
 
     <!-- Contenedor de notificaciones -->
-    <div id="notificationContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+    <div id="notificationContainer" style="position: fixed; top: 20px; right: 20px; z-index: 100000;">
+    </div>
+
+    <!-- ================= BLOQUEO SISTEMA ================= -->
+
+    <div id="lockScreen" style="
+
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,.85);
+
+display:none;
+
+justify-content:center;
+align-items:center;
+
+z-index:99999;
+
+">
+
+        <div class="card p-4 text-center shadow" style="width:350px;">
+
+            <h4 class="mb-3 text-danger">
+
+                🚨 Sistema Bloqueado
+
+            </h4>
+
+            <p>
+
+                Intrusión detectada.
+
+                Ingrese contraseña.
+
+            </p>
+
+            <input id="passwordInput" type="password" class="form-control mb-3" placeholder="Contraseña">
+
+            <button class="btn btn-danger w-100" onclick="desbloquearSistema()">
+
+                Desbloquear
+
+            </button>
+
+        </div>
+
     </div>
 
     <!-- ================= FOOTER ================= -->

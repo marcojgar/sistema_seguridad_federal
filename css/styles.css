@@ -131,3 +131,246 @@ footer a:hover {
 .table tbody tr:hover {
     background-color: #f1f5f9;
 }
+
+/* ============================
+   CAMARA CCTV PROFESIONAL
+============================ */
+
+.camera-card {
+
+    background: #111827;
+    border-radius: 15px;
+    overflow: hidden;
+
+}
+
+.camera-header {
+
+    background: #0f172a;
+    color: white;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+/* LIVE */
+.camera-live {
+
+    font-weight: 600;
+    color: red;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+}
+
+.live-dot {
+
+    width: 10px;
+    height: 10px;
+
+    background: red;
+    border-radius: 50%;
+
+    animation: blink 1s infinite;
+
+}
+
+@keyframes blink {
+
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+}
+
+/* BODY */
+.camera-body {
+
+    position: relative;
+
+}
+
+.camera-body video {
+
+    width: 100%;
+    height: 420px;
+
+    object-fit: cover;
+
+    background: black;
+
+}
+
+/* OVERLAY */
+.camera-overlay {
+
+    position: absolute;
+
+    top: 10px;
+    left: 15px;
+
+    color: #00ff88;
+
+    font-family: monospace;
+
+    text-shadow: 0px 0px 6px black;
+
+}
+
+/* Glow Profesional */
+
+.camera-card {
+
+    box-shadow:
+
+        0 0 0 rgba(13, 110, 253, 0.3),
+        0 10px 30px rgba(0, 0, 0, 0.4);
+
+}
+
+/* ============================
+   CAMARA DISTRIBUCION PRO
+============================ */
+
+.camera-card {
+
+    display: flex;
+    flex-direction: column;
+
+    background: #111827;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+}
+
+
+/* HEADER */
+
+.camera-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 12px 18px;
+
+    background: #0f172a;
+
+    color: white;
+
+}
+
+
+/* VIDEO */
+
+.camera-body {
+
+    position: relative;
+
+    padding: 15px;
+    /* ⭐ espacio interno */
+
+}
+
+
+.camera-body video {
+
+    width: 100%;
+
+    height: 100%;
+    /* ⭐ ocupa todo */
+
+    min-height: 260px;
+    /* tamaño mínimo */
+
+    object-fit: contain;
+    /* ⭐ NO corta imagen */
+
+    background: black;
+
+    border-radius: 10px;
+
+}
+
+.camera-body {
+
+    position: relative;
+
+    padding: 10px;
+
+    height: 100%;
+
+}
+
+
+/* OVERLAY */
+
+.camera-overlay {
+
+    position: absolute;
+
+    top: 15px;
+    /* ⭐ ahora arriba */
+
+    left: 25px;
+
+    right: 25px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    color: #00ff88;
+
+    font-family: monospace;
+
+    font-size: 13px;
+
+    pointer-events: none;
+
+}
+
+
+/* LIVE MÁS ELEGANTE */
+
+.camera-live {
+
+    gap: 8px;
+
+}
+
+
+/* animación */
+
+.live-dot {
+
+    width: 10px;
+
+    height: 10px;
+
+}
+
+.table-responsive {
+
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
+
+}

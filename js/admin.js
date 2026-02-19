@@ -18,6 +18,11 @@ const consumoEnergia = document.getElementById("consumoEnergia");
 const estado = document.getElementById("estado");
 
 let statusChart;
+// ================= LOCKDOWN =================
+
+let sistemaBloqueado = false;
+
+const PASSWORD_SEGURIDAD = "1234";
 
 function mostrarNotificacion(mensaje, tipo = "danger") {
 
@@ -43,6 +48,98 @@ function mostrarNotificacion(mensaje, tipo = "danger") {
         notif.style.opacity = "0";
         setTimeout(() => notif.remove(), 4000);
     }, 20000);
+}
+
+let cameraStream = null;
+
+// ================= ACTIVAR CAMARA =================
+async function activarCamara() {
+
+    const video = document.getElementById("liveCamera");
+    const status = document.getElementById("cameraStatus");
+
+    try {
+
+        // Webcam PC (modo simulación real)
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        });
+
+        video.srcObject = cameraStream;
+
+        status.textContent = "🔴 Grabando en Vivo...";
+        status.classList.remove("text-danger");
+        status.classList.add("text-success");
+
+    } catch (error) {
+
+        console.error("No se pudo activar cámara", error);
+
+        status.textContent = "❌ Error al acceder a la cámara";
+
+    }
+}
+
+
+// ================= APAGAR CAMARA =================
+function apagarCamara() {
+
+    const video = document.getElementById("liveCamera");
+    const status = document.getElementById("cameraStatus");
+
+    if (cameraStream) {
+
+        cameraStream.getTracks().forEach(track => track.stop());
+
+        video.srcObject = null;
+
+        status.textContent = "Cámara Inactiva";
+
+        status.classList.remove("text-success");
+        status.classList.add("text-danger");
+
+        cameraStream = null;
+    }
+}
+
+// ================= BLOQUEAR =================
+
+function bloquearSistema() {
+
+    sistemaBloqueado = true;
+
+    const lock =
+        document.getElementById("lockScreen");
+
+    lock.style.display = "flex";
+
+}
+
+
+// ================= DESBLOQUEAR =================
+
+function desbloquearSistema() {
+
+    const pass =
+        document.getElementById("passwordInput").value;
+
+    if (pass !== PASSWORD_SEGURIDAD) {
+
+        alert("Contraseña incorrecta");
+
+        return;
+
+    }
+
+    sistemaBloqueado = false;
+
+    document.getElementById("lockScreen")
+        .style.display = "none";
+
+    document.getElementById("passwordInput")
+        .value = "";
+
 }
 
 
@@ -191,6 +288,19 @@ async function loadControlPanel() {
 // ================= SWITCH =================
 async function handleSwitchClick(event, id) {
 
+    if (sistemaBloqueado) {
+
+        alert("Sistema bloqueado");
+
+        event.preventDefault();
+
+        event.target.checked =
+            !event.target.checked;
+
+        return;
+
+    }
+
     const isChecked = event.target.checked;
     const nuevoEstado = isChecked ? "Activo" : "Inactivo";
 
@@ -227,65 +337,137 @@ async function handleSwitchClick(event, id) {
         body: JSON.stringify(updatedDevice)
     });
 
+    // ================= CAMARA SWITCH =================
+
+    if (
+        device.nombre.includes("Camara") ||
+        device.nombre.includes("Cámara")
+    ) {
+
+        if (nuevoEstado === "Activo") {
+
+            activarCamara();
+
+        } else {
+
+            apagarCamara();
+
+        }
+
+    }
+
     // 🚨 SI ES SENSOR Y SE ACTIVA
     if (device.nombre.includes("Sensor de Puerta") && nuevoEstado === "Activo") {
 
         mostrarNotificacion("🚨 Intrusión detectada en Puerta Trasera");
+        bloquearSistema();
 
         const resAll = await fetch(API_URL);
         const devices = await resAll.json();
 
-        // 🔊 Activar Sirena
+        // 🔊 Sirena
         const sirena = devices.find(d => d.nombre.includes("Sirena"));
+
         if (sirena) {
 
-            const logSirena = {
-                estado: "Activo",
-                bateria: sirena.bateria,
-                fecha: new Date().toISOString()
-            };
-
-            const sirenaActualizada = {
-                ...sirena,
-                estado: "Activo",
-                alerta: true,
-                ultimaConexion: Date.now(),
-                logs: sirena.logs ? [...sirena.logs, logSirena] : [logSirena]
-            };
-
             await fetch(`${API_URL}/${sirena.id}`, {
+
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(sirenaActualizada)
+
+                body: JSON.stringify({
+
+                    ...sirena,
+                    estado: "Activo",
+                    alerta: true,
+                    ultimaConexion: Date.now(),
+
+                    logs: [
+                        ...(sirena.logs || []),
+                        {
+                            estado: "Activo",
+                            bateria: sirena.bateria,
+                            fecha: new Date().toISOString()
+                        }
+                    ]
+
+                })
+
             });
         }
 
-        // 🔒 Bloquear Cerradura
+
+        // 🔒 Cerradura
         const cerradura = devices.find(d => d.nombre.includes("Cerradura"));
+
         if (cerradura) {
 
-            const logCerradura = {
-                estado: "Activo",
-                bateria: cerradura.bateria,
-                fecha: new Date().toISOString()
-            };
-
-            const cerraduraActualizada = {
-                ...cerradura,
-                estado: "Activo",
-                ultimaConexion: Date.now(),
-                logs: cerradura.logs ? [...cerradura.logs, logCerradura] : [logCerradura]
-            };
-
             await fetch(`${API_URL}/${cerradura.id}`, {
+
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(cerraduraActualizada)
+
+                body: JSON.stringify({
+
+                    ...cerradura,
+                    estado: "Activo",
+                    ultimaConexion: Date.now(),
+
+                    logs: [
+                        ...(cerradura.logs || []),
+                        {
+                            estado: "Activo",
+                            bateria: cerradura.bateria,
+                            fecha: new Date().toISOString()
+                        }
+                    ]
+
+                })
+
             });
         }
 
-        // 📜 Registrar Evento Especial (opcional)
+
+        // 📷 CAMARA
+        const camara = devices.find(d =>
+            d.nombre.includes("Camara") ||
+            d.nombre.includes("Cámara")
+        );
+
+        if (camara) {
+
+            await fetch(`${API_URL}/${camara.id}`, {
+
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+
+                body: JSON.stringify({
+
+                    ...camara,
+                    estado: "Activo",
+                    alerta: true,
+                    ultimaConexion: Date.now(),
+
+                    logs: [
+                        ...(camara.logs || []),
+                        {
+                            estado: "Activo",
+                            bateria: camara.bateria,
+                            fecha: new Date().toISOString()
+                        }
+                    ]
+
+                })
+
+            });
+
+            // ⭐ ACTIVAR VIDEO EN VIVO
+            activarCamara();
+
+        }
+
         await registrarEventoEspecial("🚨 Evento Especial: Intrusión Detectada");
+
     }
 
     loadDevices();
