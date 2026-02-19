@@ -38,11 +38,11 @@ function mostrarNotificacion(mensaje, tipo = "danger") {
     const audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
     audio.play();
 
-    // Desaparece en 5 segundos
+    // Desaparece en 20 segundos
     setTimeout(() => {
         notif.style.opacity = "0";
-        setTimeout(() => notif.remove(), 500);
-    }, 5000);
+        setTimeout(() => notif.remove(), 4000);
+    }, 20000);
 }
 
 
