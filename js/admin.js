@@ -152,6 +152,8 @@ function desbloquearSistema() {
 
     if (pass === PASSWORD_SEGURIDAD) {
 
+        pass === "911911" // ⭐ codigo maestro
+
         sistemaBloqueado = false;
 
         localStorage.removeItem(
