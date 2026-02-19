@@ -21,6 +21,16 @@ let statusChart;
 // ================= LOCKDOWN =================
 
 let sistemaBloqueado = false;
+// ================= INTENTOS =================
+let intentosGuardados =
+    localStorage.getItem("intentosRestantes");
+
+let intentosRestantes =
+    intentosGuardados !== null
+        ? Number(intentosGuardados)
+        : 3;
+
+
 
 const PASSWORD_SEGURIDAD = "1234";
 
@@ -103,42 +113,103 @@ function apagarCamara() {
     }
 }
 
-// ================= BLOQUEAR =================
-
 function bloquearSistema() {
 
     sistemaBloqueado = true;
 
-    const lock =
-        document.getElementById("lockScreen");
+    localStorage.setItem(
+        "sistemaBloqueado",
+        "true"
+    );
 
-    lock.style.display = "flex";
+    document.getElementById("lockScreen")
+        .style.display = "flex";
 
 }
 
-
-// ================= DESBLOQUEAR =================
 
 function desbloquearSistema() {
 
     const pass =
         document.getElementById("passwordInput").value;
 
-    if (pass !== PASSWORD_SEGURIDAD) {
+    const input =
+        document.getElementById("passwordInput");
 
-        alert("Contraseña incorrecta");
+
+    // SIN INTENTOS
+
+    if (intentosRestantes <= 0) {
+
+        alert("Sistema bloqueado permanentemente");
 
         return;
 
     }
 
-    sistemaBloqueado = false;
 
-    document.getElementById("lockScreen")
-        .style.display = "none";
+    // CONTRASEÑA CORRECTA
 
-    document.getElementById("passwordInput")
-        .value = "";
+    if (pass === PASSWORD_SEGURIDAD) {
+
+        sistemaBloqueado = false;
+
+        localStorage.removeItem(
+            "sistemaBloqueado"
+        );
+
+        localStorage.removeItem(
+            "intentosRestantes"
+        );
+
+        document.getElementById("lockScreen")
+            .style.display = "none";
+
+        input.value = "";
+
+        intentosRestantes = 3; // reinicia
+
+        mostrarNotificacion(
+            "✅ Sistema desbloqueado",
+            "success"
+        );
+
+        return;
+
+    }
+
+
+    // CONTRASEÑA INCORRECTA
+
+    intentosRestantes--;
+
+    localStorage.setItem(
+        "intentosRestantes",
+        intentosRestantes
+    );
+
+    input.value = "";
+
+
+    if (intentosRestantes > 0) {
+
+        alert(
+            "Contraseña incorrecta. Intentos restantes: "
+            + intentosRestantes
+        );
+
+    } else {
+
+        alert(
+            "🚨 Acceso bloqueado. Contacte administrador."
+        );
+
+        mostrarNotificacion(
+            "🚨 3 intentos fallidos",
+            "danger"
+        );
+
+    }
 
 }
 
@@ -635,4 +706,50 @@ window.addEventListener('load', () => {
     loadDevices();
     loadControlPanel();
     renderMonitoring();
+
+    const intentosGuardados =
+        localStorage.getItem("intentosRestantes");
+
+    if (intentosGuardados !== null) {
+
+        intentosRestantes =
+            Number(intentosGuardados);
+
+    }
+
+    if (localStorage.getItem(
+        "sistemaBloqueado"
+    ) === "true"
+    ) {
+
+        bloquearSistema();
+
+    }
+
 });
+
+// ================= ADMIN RESET =================
+
+function desbloqueoAdmin() {
+
+    localStorage.removeItem(
+        "sistemaBloqueado"
+    );
+
+    localStorage.removeItem(
+        "intentosRestantes"
+    );
+
+    sistemaBloqueado = false;
+
+    intentosRestantes = 3;
+
+    document.getElementById("lockScreen")
+        .style.display = "none";
+
+    mostrarNotificacion(
+        "✅ Desbloqueo administrador",
+        "success"
+    );
+
+}
