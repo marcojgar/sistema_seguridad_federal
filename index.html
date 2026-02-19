@@ -89,23 +89,27 @@
             <div class="card-header bg-dark text-white">
                 Lista de Dispositivos
             </div>
-            <div class="card-body table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Tipo</th>
-                            <th>Modelo</th>
-                            <th>N° Serie</th>
-                            <th>Ubicación</th>
-                            <th>Estado</th>
-                            <th>Batería</th>
-                            <th>Alerta</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="deviceTable"></tbody>
-                </table>
+            <div class="card-body">
+                <div class="table-wrapper table-responsive">
+
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Modelo</th>
+                                <th>N° Serie</th>
+                                <th>Ubicación</th>
+                                <th>Estado</th>
+                                <th>Batería</th>
+                                <th>Alerta</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deviceTable"></tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
 
@@ -142,17 +146,21 @@
                 <div id="statusCards" class="row mb-4"></div>
 
                 <h5>Últimos 10 Cambios</h5>
-                <table class="table table-bordered">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Dispositivo</th>
-                            <th>Estado</th>
-                            <th>Batería</th>
-                            <th>Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logTable"></tbody>
-                </table>
+
+                <div class="table-wrapper table-responsive">
+                    <table class="table table-striped mb-0">
+                        <thead class="table-warning">
+                            <tr>
+                                <th>Dispositivo</th>
+                                <th>Estado</th>
+                                <th>Batería</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTable"></tbody>
+                    </table>
+                </div>
+
 
             </div>
         </div>

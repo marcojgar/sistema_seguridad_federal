@@ -51,7 +51,7 @@ h1 span {
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #0d6efd;
+    border-color: #084298;
     box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.2);
 }
 
@@ -111,4 +111,23 @@ footer a {
 
 footer a:hover {
     color: #084298;
+}
+
+.table-wrapper {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f5f9;
 }
